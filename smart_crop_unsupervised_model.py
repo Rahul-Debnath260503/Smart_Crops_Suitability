@@ -7,7 +7,7 @@ Original file is located at
     https://colab.research.google.com/drive/1d_gmLvBnAYFRKPllCM8bqYmF2U4Zy6gK
 """
 
-# 📦 Step 1: Import Libraries
+#  Step 1: Import Libraries
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -19,11 +19,11 @@ from sklearn.metrics import silhouette_score
 import warnings
 warnings.filterwarnings('ignore')
 
-# 📂 Step 2: Load Dataset
+#  Step 2: Load Dataset
 df = pd.read_csv("/content/drive/MyDrive/final_project_AGP/smart_crop_lat_long.csv")
 df.head()
 
-# 🧹 Step 3: Select and Clean Relevant Features
+#  Step 3: Select and Clean Relevant Features
 features = [
     "NDVI",
     "Seasonal_Rainfall",
@@ -36,11 +36,11 @@ features = [
 
 df_clean = df[features].dropna()
 
-# 📏 Step 4: Scale the Data
+#  Step 4: Scale the Data
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(df_clean)
 
-# 📉 Step 5: Determine Optimal Number of Clusters (Elbow Method)
+# Step 5: Determine Optimal Number of Clusters (Elbow Method)
 inertia = []
 silhouette_scores = []
 K_range = range(2, 11)
@@ -68,7 +68,7 @@ plt.ylabel("Silhouette Score")
 plt.tight_layout()
 plt.show()
 
-# ✅ Step 6: Apply KMeans with Chosen K (e.g., 4)
+#  Step 6: Apply KMeans with Chosen K (e.g., 4)
 optimal_k = 6
 kmeans = KMeans(n_clusters=optimal_k, random_state=42)
 clusters = kmeans.fit_predict(X_scaled)
@@ -76,11 +76,11 @@ clusters = kmeans.fit_predict(X_scaled)
 df_clustered = df_clean.copy()
 df_clustered["Cluster"] = clusters
 
-# 📊 Step 7: Analyze Cluster Profiles
+#  Step 7: Analyze Cluster Profiles
 cluster_summary = df_clustered.groupby("Cluster").mean()
 cluster_summary.style.background_gradient(cmap='YlGnBu')
 
-# 🧭 Step 8: Visualize with PCA (2D projection)
+#  Step 8: Visualize with PCA (2D projection)
 pca = PCA(n_components=2)
 pca_result = pca.fit_transform(X_scaled)
 
@@ -96,7 +96,7 @@ plt.legend(title="Cluster")
 plt.grid(True)
 plt.show()
 
-# 🧠 Updated: 5-cluster crop recommendation logic
+#  Updated: 5-cluster crop recommendation logic
 cluster_labels = {
     0: "Cluster 0: Apple, Wheat, Barley, Maize, Groundnut, Pearl Millet, Mushroom, Ginger (Low Rainfall, Alkaline Soil)",
     1: "Cluster 1: Maize (Corn),Rice (Paddy), Tomatoes, Pineapple, Groundnut (Peanut), Cotton, Sugarcane (High Temperature, Moderate Rainfall)",
@@ -104,8 +104,6 @@ cluster_labels = {
     3: "Cluster 3: Apple, Oats,Carrot,Spinach,Radish,Blueberries,Strawberries, Barley, Potato (Cool Climate, Moderate Rainfall, Acidic Soil)",
     4: "Cluster 4: Coconut, Rubber, Banana, Cocoa, Black Pepper, Oil Palm (Very High Rainfall, Acidic Soil, High Temperature)",
     5: "Cluster 5: Coconut, Banana, Black Pepper, Taro, Cocoa(Hot Climate, Acidic Soil, Heavy Rainfall)",
-    #6: "Cluster 6: Chickpea, Sorghum, Pearl Millet, Moth Bean, Castor (Semi-Arid, Neutral pH, Low-Moderate Rainfall)",
-    #7: "Cluster 7: Tea, Kiwi, Avocado, Raspberry, Beetroot (Temperate Highland, Slightly Acidic, High Rainfall)"
 
 }
 
@@ -161,9 +159,6 @@ cluster_labels = {
     4: "Cluster 4: Coconut, Rubber, Oil Palm, Durian, Rambutan (Very High Rainfall >3000mm, Acidic Soil pH 4.5-5.5, High Temperature 28-35°C)",
 
     5: "Cluster 5: wheat, barley, maize, millets, pulses, oilseeds, (Hot Climate 25-32°C, Acidic Soil pH 5.0-6.0, Heavy Rainfall)"
-    #6: "Cluster 6: Chickpea, Sorghum, Pearl Millet, Moth Bean, Castor (Semi-Arid, Neutral pH, Low-Moderate Rainfall)",
-    #7: "Cluster 7: Tea, Kiwi, Avocado, Raspberry, Beetroot (Temperate Highland, Slightly Acidic, High Rainfall)"
-
 }
 df_clustered["Recommended_Crops"] = df_clustered["Cluster"].map(cluster_labels)
 
@@ -181,8 +176,7 @@ cluster_colors = {
     3: '#e5c494',  # Tan
     4: '#b3b3b3',  # Light gray
     5: '#fc8d62',  # Coral orange
-    #6: '#e78ac3',  # Pink
-    #7: '#ffd92f'   # Yellow
+    
 }
 
 for index, row in df_clustered.iterrows():
@@ -224,49 +218,3 @@ plt.xticks(rotation=90)
 plt.legend(title="Cluster")
 plt.tight_layout()
 plt.show()
-
-"""# Smart Crop Recommendation System
-
-This project implements a smart crop recommendation system using K-Means clustering on various environmental and soil parameters. The goal is to group areas with similar characteristics to suggest suitable crops for those regions.
-
-## Steps and Processing
-
-The project follows these main steps:
-
-1.  **Import Libraries**: Essential libraries for data manipulation, analysis, visualization, and machine learning are imported.
-2.  **Load Dataset**: The dataset containing environmental and soil parameters is loaded into a pandas DataFrame.
-3.  **Select and Clean Relevant Features**: Specific features relevant to crop recommendation are selected, and any rows with missing values in these features are removed.
-4.  **Scale the Data**: The selected features are scaled using `StandardScaler` to ensure that all features contribute equally to the clustering process.
-5.  **Determine Optimal Number of Clusters (Elbow Method and Silhouette Score)**: The Elbow Method and Silhouette Score are used to evaluate different numbers of clusters and determine the optimal number for KMeans.
-6.  **Apply KMeans with Chosen K**: The KMeans algorithm is applied to the scaled data using the determined optimal number of clusters. The cluster labels are added to the DataFrame.
-7.  **Analyze Cluster Profiles**: The mean values of the features for each cluster are calculated to understand the characteristics of each group.
-8.  **Visualize with PCA (2D projection)**: Principal Component Analysis (PCA) is used to reduce the dimensionality of the data to 2 components, and the clusters are visualized on a scatter plot.
-9.  **Assign Recommended Crops**: Based on the characteristics of each cluster, a list of recommended crops is assigned to each cluster.
-10. **Visualize Clusters on a Map**: The clustered data points are visualized on an interactive map using `folium`, with points colored according to their cluster. Popups are added to show cluster information and recommended crops.
-11. **Analyze State Distribution within Clusters**: The distribution of different states within each cluster is analyzed to understand the geographical representation of the clusters.
-12. **Save Clustered Data**: The DataFrame with cluster assignments and recommended crops is saved to a CSV file.
-
-## Dataset
-
-The dataset used in this project is `smart_crop_lat_long.csv`. It contains various parameters including:
-
-*   `Sample_ID`: Unique identifier for each sample.
-*   `State`: State where the sample was taken.
-*   `Season`: Season when the sample was taken.
-*   `Year`: Year when the sample was taken.
-*   `Latitude`: Latitude of the sample location.
-*   `Longitude`: Longitude of the sample location.
-*   `NDVI`: Normalized Difference Vegetation Index.
-*   `Seasonal_Rainfall`: Seasonal rainfall amount.
-*   `Annual_Rainfall`: Annual rainfall amount.
-*   `Temperature`: Temperature.
-*   `pH_0_5`: pH of the soil at 0-5 cm depth.
-*   `Carbon`: Carbon content in the soil.
-*   `Texture`: Soil texture.
-
-## Results
-
-The analysis identifies distinct clusters based on the environmental and soil parameters. Each cluster is associated with a set of recommended crops that are likely to thrive in those conditions. The visualizations provide insights into the characteristics of each cluster and their geographical distribution.
-
-The output file `clustered_crop_recommendations.csv` contains the original data along with the assigned cluster and recommended crops for each location.
-"""
